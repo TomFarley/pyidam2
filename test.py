@@ -7,7 +7,7 @@ def test(host="mast.fusion.org.uk", port=56565):
 
     handle = _cidam.idamGetAPI("amc_plasma current", "15100")
     
-    print("Status: " + str(cidam.getIdamSourceStatus(handle)))
+    print("Status: " + str(_cidam.getIdamSourceStatus(handle)))
     
     _cidam.idamFree(handle)
 
