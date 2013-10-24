@@ -34,6 +34,8 @@ def resetIdamProperties():
 
 def putIdamServerHost(host):
     "Set the host name of the IDAM server"
+    if len(host) >= cidam.MAXNAME:
+        raise ValueError("Host name is too long. Maximum length %d" % (cidam.MAXNAME))
     cidam.putIdamServerHost(host)
 
 def putIdamServerPort(port):
@@ -114,6 +116,12 @@ def getIdamFloatData(handle, np.ndarray data):
     if data.size < n:
         # Could resize, but for now throw an exception
         raise ValueError("NumPy array too small")
+
+    # Check that the array is contiguous and writeable
+    if not data.flags["C_CONTIGUOUS"]:
+        raise ValueError("NumPy array must be contiguous")
+    if not data.flags["WRITEABLE"]:
+        raise ValueError("NumPy array must be writeable")
     
-    cidam.getIdamFloatData(handle, data.ctypes.data)
+    cidam.getIdamFloatData(handle, <float*> np.PyArray_DATA(data))
 

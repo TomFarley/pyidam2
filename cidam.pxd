@@ -5,6 +5,11 @@
 #        pass
 
 cdef extern from "idamclient.h":
+    # Useful #defines
+    cdef int MAXNAME   # Maximum string length for e.g. host name
+    
+    cdef int TYPE_UNKNOWN   # Used for error types
+
     # Getting and setting properties
     void setIdamProperty(const char *property)
     bint getIdamProperty(const char *property) # return boolean as integer
@@ -35,8 +40,17 @@ cdef extern from "idamclient.h":
     
     # Data access
     
+    char* getIdamDataLabel(int handle)
+    char* getIdamDataUnits(int handle)
+    char* getIdamDataDesc(int handle)
+
     int getIdamDataNum(int handle)
     int getIdamRank(int handle)
     int getIdamOrder(int handle)
+    int getIdamDimNum(int handle, int ndim)
     
+    void getIdamFloatData(int handle, float *fp)
+    int getIdamErrorType(int handle)
+    bint getIdamErrorAsymmetry(int handle)
+    void getIdamFloatAsymmetricError(int handle, int above, float *fp)
     
