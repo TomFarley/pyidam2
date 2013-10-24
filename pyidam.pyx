@@ -41,6 +41,60 @@ class IdamError(Exception):
     def __str__(self):
         return repr(self.msg)
 
+class Dimension:
+    """
+    Represents a dimension of a data array
+    
+    Attributes
+    ==========
+    
+    label    Short label (string)
+    units    Units as string
+    data     NumPy array of dimension values
+    errl     NumPy array of low-side errors
+    errh     NumPy array of high-side errors
+    
+    """
+    def __init__(self, handle=None, index=0):
+        self.label = ""
+        self.units = ""
+        self.data = None
+        self.errl = None
+        self.errh = None
+        
+        if handle != None:
+        
+            # Check that the handle is valid
+            if not cidam.getIdamSourceStatus(handle):
+                # Error of some kind
+                raise IdamError(cidam.getIdamErrorMsg(handle))
+
+            # Check that the index is valid
+            if index < 0 or index >= cidam.getIdamRank(handle):
+                raise IdamError("Dimension index is out of range")
+
+            # Get dimension descriptions
+            self.label = cidam.getIdamDimLabel(handle, index)
+            self.units = cidam.getIdamDimUnits(handle, index)
+            
+            # Get size of the data, create NumPy array, read values
+            size = cidam.getIdamDimNum(handle, index)
+            self.data = np.empty(size, dtype=np.float32)
+            cidam.getIdamFloatDimData(handle, index, <float*> np.PyArray_DATA(self.data))
+            # Get the errors, if available
+            if cidam.getIdamDimErrorType(handle, index) != cidam.TYPE_UNKNOWN:
+                self.errl = np.empty(size, dtype=np.float32)
+                cidam.getIdamFloatDimAsymmetricError(handle, index, 0, 
+                                                     <float*> np.PyArray_DATA(self.errl))
+                if not cidam.getIdamDimErrorAsymmetry(handle, index):
+                    # Symmetric error
+                    self.errh = self.errl
+                else:
+                    # Asymmetric error
+                    self.errh = np.empty(size, dtype=np.float32)
+                    cidam.getIdamFloatDimAsymmetricError(handle, index, 1, 
+                                                         <float*> np.PyArray_DATA(self.errh))
+
 class Data:
     """
     Represents a data item from IDAM
@@ -58,7 +112,11 @@ class Data:
     units     Data units (e.g. "kA")
     desc      longer description (if set)
 
+    dim       A list of Dimension objects corresponding to data array indices
+    
     order     Index of time dimension
+
+    time      Same as dim[order]. May be None
     
     """
 
@@ -124,6 +182,15 @@ class Data:
                     self.errl = None
                     self.errh = None
                 
+                # Read the dimensions
+                self.dim = []
+                for i in range(rank):
+                    self.dim.append(Dimension(handle, i))
+                    
+                # Create shortcut to time dimension
+                self.time = None
+                if self.order >= 0 and self.order < rank:
+                    self.time = self.dim[self.order]
             finally:
                 # Close connection
                 cidam.idamFree(handle);

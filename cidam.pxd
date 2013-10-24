@@ -38,19 +38,36 @@ cdef extern from "idamclient.h":
     bint getIdamSourceStatus(int handle) # Returns bool
     char *getIdamErrorMsg(int handle) # NOTE: Does this allocate memory? Should it be const char*?
     
-    # Data access
+    # Data string descriptions
     
     char* getIdamDataLabel(int handle)
     char* getIdamDataUnits(int handle)
     char* getIdamDataDesc(int handle)
 
-    int getIdamDataNum(int handle)
-    int getIdamRank(int handle)
-    int getIdamOrder(int handle)
-    int getIdamDimNum(int handle, int ndim)
+    # Data size
+
+    int getIdamDataNum(int handle) # Size of the data 
+    int getIdamRank(int handle)    # Rank of the data array
+    int getIdamOrder(int handle)   # Time index
     
+    # Data dimensions
+
+    int getIdamDimNum(int handle, int ndim)     # Size of dimension
+    char* getIdamDimLabel(int handle, int ndim) # Dimension label
+    char* getIdamDimUnits(int handle, int ndim) # Dimension units
+    void getIdamFloatDimData(int handle, int ndim, float *fp)  # Dimension values
+    
+    int getIdamDimErrorType(int handle, int ndim)
+    bint getIdamDimErrorAsymmetry(int handle, int ndim) # Is the error symmetric?
+    void getIdamFloatDimAsymmetricError(int handle, int ndim, int above, float *fp)
+    
+    # Read data
+
     void getIdamFloatData(int handle, float *fp)
+    
+    # Read data error values
+
     int getIdamErrorType(int handle)
-    bint getIdamErrorAsymmetry(int handle)
+    bint getIdamErrorAsymmetry(int handle)  # Is the error symmetric?
     void getIdamFloatAsymmetricError(int handle, int above, float *fp)
     

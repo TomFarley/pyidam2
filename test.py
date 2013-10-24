@@ -19,7 +19,9 @@ def test2(host="mast.fusion.org.uk", port=56565):
     
     d = pyidam.Data("amc_plasma current", 15100)
     
-    plt.plot(d.data)
+    plt.plot(d.time.data, d.data)
+    plt.xlabel(d.time.label)
+    plt.ylabel(d.label)
     plt.show()
 
 
