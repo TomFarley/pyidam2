@@ -1,13 +1,15 @@
-#IDAM module for Python
+IDAM module for Python
+======================
 
 Provides a Python interface to D.G.Muir's IDAM library consisting of two modules:
 
-* **_cidam**    is a low-level interface to the IDAM library
-* **pyidam**    is a more Pythonic interface, recommended for most applications
+* _cidam    is a low-level interface to the IDAM library
+* pyidam    is a more Pythonic interface, recommended for most applications
 
 Developed by Ben Dudson, University of York <benjamin.dudson@york.ac.uk>
 
-##Installation
+Installation
+============
 
 To install this module, first compile the IDAM shared library 
 (by D.G.Muir). This will then produce a shared library
@@ -35,7 +37,8 @@ You will need to have installed:
 Currently this compiles the module in the current directory, rather than
 installing it in the system directory.
 
-##Use
+Use
+===
 
 python
 
