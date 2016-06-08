@@ -120,7 +120,7 @@ class Data:
     
     """
 
-    def __init__(self, data, source, host=None, port=None):
+    def __init__(self, data, source, host=None, port=None, verbose=False):
         # Make sure the inputs are strings
         data = str(data)
         source = str(source)
@@ -134,8 +134,9 @@ class Data:
             cidam.putIdamServerPort(port)
         
         try:
-            print("Connecting to %s:%d" % (cidam.getIdamServerHost(), cidam.getIdamServerPort()))
-            print("Reading '%s' from '%s'" % (data, source))
+            if verbose:
+                print("Connecting to %s:%d" % (cidam.getIdamServerHost(), cidam.getIdamServerPort()))
+                print("Reading '%s' from '%s'" % (data, source))
             # Open connection 
             handle = cidam.idamGetAPI(data, source)
             
